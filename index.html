@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Example for Textpoly</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <style media='screen'></style>
+  <script type="module" src='textpoly.js'></script>
+  <script type="module">
+    import { Textpoly } from './textpoly.js';
+
+    const tp = new Textpoly();
+    tp.options.lineHeight = 30;
+    tp.options.marginTop = 15;
+    const poly = '50,350 350,450 450,100 300,20';
+    const polyElem = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    polyElem.setAttribute('points', poly);
+    polyElem.style.fill = 'none';
+    polyElem.style.strokeWidth = 1;
+    polyElem.style.stroke = 'black';
+    const svg = document.querySelector('svg');
+    svg.append(polyElem);
+    tp.addPolygon(poly);
+    const boxes = tp.createTextBoxes();
+    console.log('boxes', boxes);
+    boxes.forEach(box => {
+      const rectElem = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rectElem.setAttribute('x', box.startX);
+      rectElem .setAttribute('y', box.y);
+      rectElem.setAttribute('width', box.endX-box.startX);
+      rectElem.setAttribute('height', box.y2-box.y);
+      rectElem.style.fill = 'yellow';
+      svg.append(rectElem);
+    })
+    const path = tp.createTextPath();
+    console.log('path', path);
+    const pathElem = document.createElementNS('http://www.w3.org/2000/svg','path');
+    pathElem.setAttribute('d', path);
+    pathElem.setAttribute('id', 'myPath')
+    pathElem.style.strokeWidth = 1;
+    pathElem.style.stroke = 'red';
+    svg.append(pathElem);
+    const textElem = document.createElementNS('http://www.w3.org/2000/svg','text');
+    const textPathElem = document.createElementNS('http://www.w3.org/2000/svg','textPath');
+    textPathElem.setAttribute('href', '#myPath');
+    textElem.append(textPathElem);
+    textElem.style.fontSize = 20;
+    svg.append(textElem);
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const textContent = document.createTextNode(document.querySelector('template').innerHTML);
+      textPathElem.append(textContent);
+    });
+  </script>
+</head>
+<body>
+  <h1>Example for Textpoly</h1>
+  <template>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus dui, dignissim a ante a, gravida facilisis sem. Curabitur pulvinar est ut ultricies laoreet. Cras cursus pharetra posuere. Nam orci metus, faucibus et elementum vel, consectetur sed velit. Mauris a nunc pellentesque, blandit turpis at, aliquam odio. Aliquam ut augue tristique, aliquam ex bibendum, lobortis risus. Maecenas ac nunc condimentum, malesuada urna ac, congue dui. Nullam faucibus cursus commodo. Nunc sit amet risus convallis, facilisis diam non, pulvinar sem. Etiam ac lacus quis metus efficitur malesuada id sed diam.
+    Praesent aliquam ex lorem, eu elementum purus blandit sit amet. Etiam nec rutrum ex. Curabitur dapibus enim lacinia tortor volutpat ultricies. Sed viverra maximus eros, sed tempor lectus fringilla ut. Curabitur rutrum ligula eget convallis dapibus. Sed bibendum lacus ante, at venenatis enim ultricies in. In vel interdum quam, quis tincidunt ante. Vestibulum quis varius tortor, id bibendum lorem.
+    Phasellus tincidunt finibus nulla, ut venenatis mauris consectetur eu. Donec eu aliquam arcu. Suspendisse in accumsan nisi. Nulla ex urna, tincidunt eu mi at, dictum commodo augue. Aenean posuere mauris non metus tempor, vitae dignissim ex ullamcorper. Duis sed consequat quam, sit amet pretium turpis. Nunc tincidunt malesuada nibh, id rhoncus ante elementum eget.
+    Proin lobortis eleifend magna in placerat. Integer auctor felis mi, quis sodales quam vestibulum in. Vivamus pretium sapien in massa accumsan, non aliquam ipsum blandit. Quisque mattis ullamcorper dictum. Ut vitae nisi vitae massa volutpat feugiat quis vitae orci. Curabitur eu risus purus. Praesent dignissim, metus non posuere iaculis, urna ex tincidunt eros, ut finibus tortor massa at eros. Sed metus mi, euismod id aliquam ut, maximus id tellus.  
+    Mauris eu ex nec elit tincidunt sagittis. Nullam rhoncus venenatis metus, eget condimentum sapien pharetra eu. Pellentesque commodo pellentesque eros vitae commodo. Morbi feugiat ipsum nec efficitur imperdiet. Morbi cursus sit amet odio sed pharetra. Etiam volutpat vel mauris vel tempus. Vivamus vehicula at urna nec elementum.
+  </template>
+  <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black;" xmlns="http://www.w3.org/2000/svg">
+  </svg>
+</body>
+</html>
