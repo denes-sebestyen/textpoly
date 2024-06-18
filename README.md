@@ -17,20 +17,20 @@ API
 ---
 The **Textpoly** class is exported named and for default
 
-# constructor([...polygons])
+### constructor([...polygons])
 sets the default polygons, it accepts an array of polygons. See [addPolygon](#addPolygon)
 
-# addPolygon(polygon) (#addPolygon)
+### addPolygon(polygon) (#add-polygon)
 accepts a polygon in two different formats
 - an array of objects { x, y }
 - a string of coordinates, just like the **points** attribute of [\<polygon\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon)
 
-# emptyPolygons()
+### emptyPolygons()
 empties the polygons to have a fresh start if needed
 
-# createTextBoxes()
+### createTextBoxes()
 generates an array of box definitions based on the polygons.
 The object of each box is { startX, endX, y, y2 } - left, right, top, bottom coordinates respectively
 
-# createTextPath()
+### createTextPath()
 creates a path definition that can be used in [\<path\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path) as **d** attribute
