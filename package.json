@@ -1,0 +1,26 @@
+{
+  "name": "@sebi-t/textpoly",
+  "version": "1.0.0",
+  "description": "A library that enables the developer to create polygons with text in it in an SVG doc",
+  "main": "textpoly.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denes-sebestyen/textpoly.git"
+  },
+  "keywords": [
+    "textpoly",
+    "svg",
+    "polygon",
+    "text",
+    "format"
+  ],
+  "author": "Denes Sebestyen",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/denes-sebestyen/textpoly/issues"
+  },
+  "homepage": "https://github.com/denes-sebestyen/textpoly#readme"
+}
