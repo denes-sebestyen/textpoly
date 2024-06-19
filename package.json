@@ -1,5 +1,5 @@
 {
-  "name": "@sebi-t/textpoly",
+  "name": "@sebi_t/textpoly",
   "version": "1.0.0",
   "description": "A library that enables the developer to create polygons with text in it in an SVG doc",
   "main": "textpoly.js",
