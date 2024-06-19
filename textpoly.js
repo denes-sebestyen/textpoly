@@ -12,7 +12,7 @@ export class Textpoly {
     return typeof point==='object' && typeof point.x==='number' && typeof point.y==='number';
   }
 
-  #checkPolygon(polygon) {
+  #isPolygon(polygon) {
     if (!Array.isArray(polygon)) {
       return false;
     }
@@ -26,14 +26,14 @@ export class Textpoly {
     if (typeof polygon !== 'string') return polygon;
     const points = polygon.split(' ').filter(point => point);
     const re = /^(\d+),(\d+)$/;
-    if (points.some(point => !re.test(point))) throw new Error(`error processing '${polygon}', '${point}' is not a point`);
+    if (points.some(point => !re.test(point))) throw new Error(`error processing '${polygon}'`); // TODO: add '${point}' is not a point back somehow
     return points.map(point => { const [x,y] = point.split(','); return { x: Number(x), y: Number(y) } });
   }
 
   constructor(...polygons) {
     this.#polygons = [];
     polygons.map(polygon => this.#processString(polygon))
-      .filter(polygon => this.#checkPolygon(polygon))
+      .filter(polygon => this.#isPolygon(polygon))
       .forEach(polygon => this.#polygons.push(polygon));
   }
 
@@ -43,7 +43,7 @@ export class Textpoly {
 
   addPolygon(polygon) {
     if (typeof polygon==='string') polygon = this.#processString(polygon);
-    if (!this.#checkPolygon(polygon)) throw new Error(`can not add polygon '${polygon}', because its format is not valid`);
+    if (!this.#isPolygon(polygon)) throw new Error(`can not add polygon '${polygon}', because its format is not valid`);
     this.#polygons.push(polygon);
   }
 
@@ -76,13 +76,13 @@ export class Textpoly {
             if (topCrosses.length > 0 && bottomCrosses.length > 0) {
               startX = Math.max(...topCrosses, ...bottomCrosses);
               topCrosses = [];
-              bottomCrosses = []
+              bottomCrosses = [];
             }
           } else {
             if (topCrosses.length > 0 && bottomCrosses.length > 0) {
               textBoxes.push({ startX, endX: Math.min(...topCrosses, ...bottomCrosses), y, y2 });
               topCrosses = [];
-              bottomCrosses = []
+              bottomCrosses = [];
             }
           }
         });
