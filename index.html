@@ -10,45 +10,30 @@
   <script type="module">
     import { Textpoly } from './textpoly.js';
 
+    const createSvgElement = (parent, elemName, attributes={}, style={}) => {
+      const elem = document.createElementNS('http://www.w3.org/2000/svg',elemName);
+      for (const attrName in attributes) elem.setAttribute(attrName, attributes[attrName]);
+      for (const styleName in style) elem.style[styleName] = style[styleName];
+      if (parent) parent.append(elem);
+      return elem;
+    }
+
     const tp = new Textpoly();
     tp.options.lineHeight = 30;
     tp.options.marginTop = 15;
     const poly = '50,350 350,450 450,100 300,20';
-    const polyElem = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    polyElem.setAttribute('points', poly);
-    polyElem.style.fill = 'none';
-    polyElem.style.strokeWidth = 1;
-    polyElem.style.stroke = 'black';
-    const svg = document.querySelector('svg');
-    svg.append(polyElem);
-    tp.addPolygon(poly);
-    const boxes = tp.createTextBoxes();
-    console.log('boxes', boxes);
-    boxes.forEach(box => {
-      const rectElem = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      rectElem.setAttribute('x', box.startX);
-      rectElem .setAttribute('y', box.y);
-      rectElem.setAttribute('width', box.endX-box.startX);
-      rectElem.setAttribute('height', box.y2-box.y);
-      rectElem.style.fill = 'yellow';
-      svg.append(rectElem);
-    })
-    const path = tp.createTextPath();
-    console.log('path', path);
-    const pathElem = document.createElementNS('http://www.w3.org/2000/svg','path');
-    pathElem.setAttribute('d', path);
-    pathElem.setAttribute('id', 'myPath')
-    pathElem.style.strokeWidth = 1;
-    pathElem.style.stroke = 'red';
-    svg.append(pathElem);
-    const textElem = document.createElementNS('http://www.w3.org/2000/svg','text');
-    const textPathElem = document.createElementNS('http://www.w3.org/2000/svg','textPath');
-    textPathElem.setAttribute('href', '#myPath');
-    textElem.append(textPathElem);
-    textElem.style.fontSize = 20;
-    svg.append(textElem);
-
     document.addEventListener('DOMContentLoaded', ()=>{
+      const svg = document.querySelector('svg');
+      createSvgElement(svg, 'polygon', { points: poly }, { fill: 'none', strokeWidth: 1, stroke: 'black' });
+      tp.addPolygon(poly);
+      const boxes = tp.createTextBoxes();
+      boxes.forEach(box => {
+        createSvgElement(svg, 'rect', { x: box.startX, y: box.y, width: box.endX-box.startX, height: box.y2-box.y }, { fill: 'yellow' });
+      })
+      const path = tp.createTextPath();
+      createSvgElement(svg, 'path', { d: path, id: 'myPath' }, { strokeWidth: 1, stroke: 'red' });
+      const textElem = createSvgElement(svg, 'text', { 'font-size': 20 });
+      const textPathElem = createSvgElement(textElem, 'textPath', { href: '#myPath' });
       const textContent = document.createTextNode(document.querySelector('template').innerHTML);
       textPathElem.append(textContent);
     });
