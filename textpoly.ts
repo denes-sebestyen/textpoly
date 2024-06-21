@@ -77,13 +77,16 @@ export class Textpoly {
         let topCrosses: number[] = [];
         let bottomCrosses: number[] = [];
         lines.forEach(({ A, B }) => {
-          const t1 = (y-B.y) / (A.y-B.y);
-          if (t1 >= 0 && t1 <= 1) {
-            topCrosses.push((1-t1)*B.x + t1*(A.x));
-          }
-          const t2 = (y2-B.y) / (A.y-B.y);
-          if (t2 >= 0 && t2 <= 1) {
-            bottomCrosses.push((1-t2)*B.x + t2*(A.x));
+          const ABy = A.y - B.y;
+          if (ABy !== 0) {
+            const t1 = (y-B.y) / ABy;
+            if (t1 >= 0 && t1 <= 1) {
+              topCrosses.push((1-t1)*B.x + t1*(A.x));
+            }
+            const t2 = (y2-B.y) / ABy;
+            if (t2 >= 0 && t2 <= 1) {
+              bottomCrosses.push((1-t2)*B.x + t2*(A.x));
+            }
           }
           if (startX === null) {
             if (topCrosses.length > 0 && bottomCrosses.length > 0) {
