@@ -11,31 +11,68 @@
     import { Textpoly } from './textpoly.js';
 
     const createSvgElement = (parent, elemName, attributes={}, style={}) => {
-      const elem = document.createElementNS('http://www.w3.org/2000/svg',elemName);
+      const elem = document.createElementNS('http://www.w3.org/2000/svg', elemName);
       for (const attrName in attributes) elem.setAttribute(attrName, attributes[attrName]);
       for (const styleName in style) elem.style[styleName] = style[styleName];
       if (parent) parent.append(elem);
       return elem;
     }
+    const polyToString = (poly) => poly.map(point => `${point.x},${point.y}`).join(' ');
+    const addMover = (parent, g, idx) => {
+      const point = poly[idx];
+      const circle = createSvgElement(parent, 'circle', { cx: point.x, cy: point.y, r: 5, 'pointer-events': 'all' }, { fill: 'none', strokeWidth: 1, stroke: 'blue' } )
+      const handleMouseMove = e => {
+        const rect = parent.getBoundingClientRect();
+        const x = e.clientX - rect.x;
+        const y = e.clientY - rect.y;
+        poly[idx].x = x;
+        poly[idx].y = y;
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        render(g);
+      };
+      circle.addEventListener('mousedown', e => {
+        const t = e.target;
+        parent.addEventListener('mousemove', handleMouseMove);
+      });
+      parent.addEventListener('mouseup', e => {
+        const t = e.target;
+        parent.removeEventListener('mousemove', handleMouseMove);
+      })
+    }
 
     const tp = new Textpoly();
     tp.options.lineHeight = 30;
     tp.options.marginTop = 15;
-    const poly = '50,350 350,450 450,100 300,20';
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const svg = document.querySelector('svg');
-      createSvgElement(svg, 'polygon', { points: poly }, { fill: 'none', strokeWidth: 1, stroke: 'black' });
+    let poly = [
+      { x: 50, y: 350 },
+      { x: 350, y: 450 },
+      { x: 450, y: 100 },
+      { x: 300, y: 20 }
+    ];
+    const render = (parent) => {
+      Array.from(parent.children).forEach(child => child.remove());
+      createSvgElement(parent, 'polygon', { points: polyToString(poly) }, { fill: 'none', strokeWidth: 1, stroke: 'black' });
+      tp.emptyPolygons();
       tp.addPolygon(poly);
       const boxes = tp.createTextBoxes();
       boxes.forEach(box => {
-        createSvgElement(svg, 'rect', { x: box.startX, y: box.y, width: box.endX-box.startX, height: box.y2-box.y }, { fill: 'yellow' });
+        createSvgElement(parent, 'rect', { x: box.startX, y: box.y, width: box.endX-box.startX, height: box.y2-box.y }, { fill: 'yellow' });
       })
       const path = tp.createTextPath();
-      createSvgElement(svg, 'path', { d: path, id: 'myPath' }, { strokeWidth: 1, stroke: 'red' });
-      const textElem = createSvgElement(svg, 'text', { 'font-size': 20 });
+      createSvgElement(parent, 'path', { d: path, id: 'myPath' }, { strokeWidth: 1, stroke: 'red' });
+      const textElem = createSvgElement(parent, 'text', { 'font-size': 20 });
       const textPathElem = createSvgElement(textElem, 'textPath', { href: '#myPath' });
       const textContent = document.createTextNode(document.querySelector('template').innerHTML);
       textPathElem.append(textContent);
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+      const svg = document.querySelector('svg');
+      const g = createSvgElement(svg, 'g');
+      render(g);
+      for (let i=0; i<poly.length; i++) {
+        addMover(svg, g, i);
+      }
     });
   </script>
 </head>
