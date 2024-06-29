@@ -22,27 +22,30 @@
       return elem;
     }
     const polyToString = (poly) => poly.map(point => `${point.x},${point.y}`).join(' ');
-    const addMover = (parent, g, idx) => {
-      const point = poly[idx];
+    const addMover = (parent, g, point) => {
       const circle = createSvgElement(parent, 'circle', { cx: point.x, cy: point.y, r: 5, 'pointer-events': 'all' }, { fill: 'none', strokeWidth: 1, stroke: 'blue' } )
       const handleMouseMove = e => {
         const rect = parent.getBoundingClientRect();
         const x = e.clientX - rect.x;
         const y = e.clientY - rect.y;
-        poly[idx].x = x;
-        poly[idx].y = y;
+        point.x = x;
+        point.y = y;
         circle.setAttribute('cx', x);
         circle.setAttribute('cy', y);
         render(g);
       };
       circle.addEventListener('mousedown', e => {
-        const t = e.target;
         parent.addEventListener('mousemove', handleMouseMove);
       });
       parent.addEventListener('mouseup', e => {
-        const t = e.target;
         parent.removeEventListener('mousemove', handleMouseMove);
-      })
+      });
+      circle.addEventListener('dblclick', e => {
+        if (poly.length <= 3) return;
+        poly.splice(poly.findIndex(v => v===point), 1);
+        circle.remove();
+        render(g);
+      });
     }
 
     const tp = new Textpoly();
@@ -73,11 +76,18 @@
       const svg = document.querySelector('svg');
       const g = createSvgElement(svg, 'g');
       render(g);
-      for (let i=0; i<poly.length; i++) {
-        addMover(svg, g, i);
-      }
+      poly.forEach(point => addMover(svg, g, point));
       document.querySelectorAll('[id^=options-]')
         .forEach(input => input.addEventListener('input', () => render(g)));
+      document.querySelector('#add-vertex')
+        .addEventListener('click', () => {
+          const a = poly[0];
+          const b = poly[poly.length-1];
+          const mid = { x: (b.x+a.x)/2, y: (b.y+a.y)/2 };
+          poly.push(mid);
+          addMover(svg, g, mid);
+          render(g);
+        });
     });
   </script>
 </head>
@@ -90,17 +100,21 @@
     Proin lobortis eleifend magna in placerat. Integer auctor felis mi, quis sodales quam vestibulum in. Vivamus pretium sapien in massa accumsan, non aliquam ipsum blandit. Quisque mattis ullamcorper dictum. Ut vitae nisi vitae massa volutpat feugiat quis vitae orci. Curabitur eu risus purus. Praesent dignissim, metus non posuere iaculis, urna ex tincidunt eros, ut finibus tortor massa at eros. Sed metus mi, euismod id aliquam ut, maximus id tellus.  
     Mauris eu ex nec elit tincidunt sagittis. Nullam rhoncus venenatis metus, eget condimentum sapien pharetra eu. Pellentesque commodo pellentesque eros vitae commodo. Morbi feugiat ipsum nec efficitur imperdiet. Morbi cursus sit amet odio sed pharetra. Etiam volutpat vel mauris vel tempus. Vivamus vehicula at urna nec elementum.
   </template>
-  <div style="display: flex; flex-direction: row;">
+  <div style="display: flex; flex-direction: row; gap: 10px;">
     <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black;" xmlns="http://www.w3.org/2000/svg">
     </svg>
-    <fieldset><legend>Options</legend>
-      <label>lineHeight: <input id="options-lineHeight" type="number" value="30"></label>
-      <label>marginTop: <input id="options-marginTop" type="number" value="15"></label>
-      <label>marginBottom: <input id="options-marginBottom" type="number" value="0"></label>
-      <label>marginLeft: <input id="options-marginLeft" type="number" value="0"></label>
-      <label>marginRight: <input id="options-marginRight" type="number" value="0"></label>
-      <label>method: <input id="options-method" type="number" value="1"></label>
-    </fieldset>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <fieldset><legend>Options</legend>
+        <label>lineHeight: <input id="options-lineHeight" type="number" value="30"></label>
+        <label>marginTop: <input id="options-marginTop" type="number" value="15"></label>
+        <label>marginBottom: <input id="options-marginBottom" type="number" value="0"></label>
+        <label>marginLeft: <input id="options-marginLeft" type="number" value="0"></label>
+        <label>marginRight: <input id="options-marginRight" type="number" value="0"></label>
+        <label>method: <input id="options-method" type="number" value="1"></label>
+      </fieldset>
+      <div><button id="add-vertex">Add vertex</button></div>
+      <div>Double click on vertex to remove (you can not have less than 3 vertices)</div>
+    </div>
   </div>
 </body>
 </html>
