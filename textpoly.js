@@ -67,9 +67,13 @@ export class Textpoly {
       const from = minY+this.options.marginTop;
       const till = maxY-this.options.marginBottom;
       if (this.options.method === 1) {
+        const defaultBuild = {
+          topLeft: false, topRight: false, bottomLeft: false, bottomRight: false,
+          left: minX, right: maxX
+        }
         const rows = new Array(Math.floor((till-from) / lineHeight))
           .fill({})
-          .map((_, idx) => ({ top: from+idx*lineHeight, bottom: from+(idx+1)*lineHeight, segments: [], build: {} }));
+          .map((_, idx) => ({ top: from+idx*lineHeight, bottom: from+(idx+1)*lineHeight, segments: [], build: { ...defaultBuild } }));
         lines.forEach(({ A, B }) => {
           const [ upper, lower ] = A.y < B.y ? [ A, B] : [ B, A ];
           const LUy = lower.y - upper.y;
@@ -78,22 +82,22 @@ export class Textpoly {
               const build = row.build;
               if (idx === 0 && rowsFiltered.length === 0) { // only row
                 if (build.topLeft && build.bottomLeft) {
-                  build.right = Math.min(build.right ?? maxX, A.x, B.x);
+                  build.right = Math.min(build.right, A.x, B.x);
                 } else {
-                  build.left = Math.max(build.left ?? minX, A.x, B.x);
+                  build.left = Math.max(build.left, A.x, B.x);
                 }
               } else if (upper.y > row.top) { // first row
                 const t = (row.bottom - upper.y) / LUy;
                 const bottomX = (1-t)*upper.x + t*(lower.x);
                 if (build.topLeft && build.bottomLeft) {
-                  build.right = Math.min(build.right ?? maxX, upper.x, bottomX);
+                  build.right = Math.min(build.right, upper.x, bottomX);
                   build.bottomRight = true;
                 } else {
-                  build.left = Math.max(build.left ?? minX, upper.x, bottomX);
+                  build.left = Math.max(build.left, upper.x, bottomX);
                   build.bottomLeft = true;
                 }
                 build.bottomX = bottomX;
-              } else if (lower.y > row.bottom) { // middle rows
+              } else if (lower.y >= row.bottom) { // middle rows
                 let topX;
                 if (idx > 0) {
                   topX = rowsFiltered[idx-1].build.bottomX;
@@ -104,11 +108,11 @@ export class Textpoly {
                 const t = (row.bottom - upper.y) / LUy;
                 const bottomX = (1-t)*upper.x + t*(lower.x);
                 if (build.topLeft && build.bottomLeft) {
-                  build.right = Math.min(build.right ?? maxX, topX, bottomX);
+                  build.right = Math.min(build.right, topX, bottomX);
                   build.topRight = true;
                   build.bottomRight = true;
                 } else {
-                  build.left = Math.max(build.left ?? minX, topX, bottomX);
+                  build.left = Math.max(build.left, topX, bottomX);
                   build.topLeft = true;
                   build.bottomLeft = true;
                 }
@@ -122,19 +126,16 @@ export class Textpoly {
                   topX = (1-t)*upper.x + t*(lower.x);
                 }
                 if (build.topLeft && build.bottomLeft) {
-                  build.right = Math.min(build.right ?? maxX, topX, lower.x);
+                  build.right = Math.min(build.right, topX, lower.x);
                   build.topRight = true;
                 } else {
-                  build.left = Math.max(build.left ?? minX, topX, lower.x);
+                  build.left = Math.max(build.left, topX, lower.x);
                   build.topLeft = true;
                 }
               }
               if (build.topLeft && build.topRight && build.bottomLeft && build.bottomRight) {
                 row.segments.push({ left: build.left, right: build.right });
-                build.topLeft = false;
-                build.topRight = false;
-                build.bottomLeft = false;
-                build.bottomRight = false;
+                row.build = { ...row.build, ...defaultBuild };
               }
             });
         });

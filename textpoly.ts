@@ -78,7 +78,7 @@ export class Textpoly {
         .map(line => line.A.x > line.B.x ? { A: line.B, B: line.A } : line);
       lines.sort((l1, l2) => l1.A.x == l2.A.x ? l1.B.x - l2.B.x : l1.A.x - l2.A.x);
       const from = minY+this.options.marginTop;
-      const till = maxY-this.options.marginBottom-lineHeight;
+      const till = maxY-this.options.marginBottom;
       interface Segment { left: number; right: number }
       interface Build {
         topLeft: boolean; topRight: boolean; bottomLeft: boolean; bottomRight: boolean;
@@ -88,7 +88,7 @@ export class Textpoly {
       if (this.options.method === 1) {
         const defaultBuild: Build = {
           topLeft: false, topRight: false, bottomLeft: false, bottomRight: false,
-          left: minX, right: maxX, bottomX: 0
+          left: minX, right: maxX
         }
         const rows: Row[] = new Array(Math.floor((till-from) / lineHeight))
           .fill({})
@@ -116,7 +116,7 @@ export class Textpoly {
                   build.bottomLeft = true;
                 }
                 build.bottomX = bottomX;
-              } else if (lower.y > row.bottom) { // middle rows
+              } else if (lower.y >= row.bottom) { // middle rows
                 let topX;
                 if (idx > 0) {
                   topX = rowsFiltered[idx-1].build.bottomX;
@@ -154,11 +154,7 @@ export class Textpoly {
               }
               if (build.topLeft && build.topRight && build.bottomLeft && build.bottomRight) {
                 row.segments.push({ left: build.left, right: build.right });
-                row.build = { ...defaultBuild };
-                build.topLeft = false;
-                build.topRight = false;
-                build.bottomLeft = false;
-                build.bottomRight = false;
+                row.build = { ...row.build, ...defaultBuild };
               }
             });
         });
