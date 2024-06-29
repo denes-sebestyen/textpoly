@@ -5,7 +5,11 @@
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
   <title>Example for Textpoly</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <style media='screen'></style>
+  <style media='screen'>
+    label {
+      display: block;
+    }
+  </style>
   <script type="module" src='textpoly.js'></script>
   <script type="module">
     import { Textpoly } from './textpoly.js';
@@ -42,8 +46,6 @@
     }
 
     const tp = new Textpoly();
-    tp.options.lineHeight = 30;
-    tp.options.marginTop = 15;
     let poly = [
       { x: 50, y: 350 },
       { x: 350, y: 450 },
@@ -51,6 +53,7 @@
       { x: 300, y: 20 }
     ];
     const render = (parent) => {
+      document.querySelectorAll('[id^=options-]').forEach(input => tp.options[input.id.split('-')[1]] = Number(input.value));
       Array.from(parent.children).forEach(child => child.remove());
       createSvgElement(parent, 'polygon', { points: polyToString(poly) }, { fill: 'none', strokeWidth: 1, stroke: 'black' });
       tp.emptyPolygons();
@@ -73,6 +76,8 @@
       for (let i=0; i<poly.length; i++) {
         addMover(svg, g, i);
       }
+      document.querySelectorAll('[id^=options-]')
+        .forEach(input => input.addEventListener('input', () => render(g)));
     });
   </script>
 </head>
@@ -85,7 +90,17 @@
     Proin lobortis eleifend magna in placerat. Integer auctor felis mi, quis sodales quam vestibulum in. Vivamus pretium sapien in massa accumsan, non aliquam ipsum blandit. Quisque mattis ullamcorper dictum. Ut vitae nisi vitae massa volutpat feugiat quis vitae orci. Curabitur eu risus purus. Praesent dignissim, metus non posuere iaculis, urna ex tincidunt eros, ut finibus tortor massa at eros. Sed metus mi, euismod id aliquam ut, maximus id tellus.  
     Mauris eu ex nec elit tincidunt sagittis. Nullam rhoncus venenatis metus, eget condimentum sapien pharetra eu. Pellentesque commodo pellentesque eros vitae commodo. Morbi feugiat ipsum nec efficitur imperdiet. Morbi cursus sit amet odio sed pharetra. Etiam volutpat vel mauris vel tempus. Vivamus vehicula at urna nec elementum.
   </template>
-  <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black;" xmlns="http://www.w3.org/2000/svg">
-  </svg>
+  <div style="display: flex; flex-direction: row;">
+    <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black;" xmlns="http://www.w3.org/2000/svg">
+    </svg>
+    <fieldset><legend>Options</legend>
+      <label>lineHeight: <input id="options-lineHeight" type="number" value="30"></label>
+      <label>marginTop: <input id="options-marginTop" type="number" value="15"></label>
+      <label>marginBottom: <input id="options-marginBottom" type="number" value="0"></label>
+      <label>marginLeft: <input id="options-marginLeft" type="number" value="0"></label>
+      <label>marginRight: <input id="options-marginRight" type="number" value="0"></label>
+      <label>method: <input id="options-method" type="number" value="1"></label>
+    </fieldset>
+  </div>
 </body>
 </html>
