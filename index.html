@@ -72,6 +72,7 @@
       const textContent = document.createTextNode(document.querySelector('template').innerHTML);
       textPathElem.append(textContent);
     };
+    
     document.addEventListener('DOMContentLoaded', () => {
       const svg = document.querySelector('svg');
       const g = createSvgElement(svg, 'g');
@@ -79,15 +80,26 @@
       poly.forEach(point => addMover(svg, g, point));
       document.querySelectorAll('[id^=options-]')
         .forEach(input => input.addEventListener('input', () => render(g)));
-      document.querySelector('#add-vertex')
-        .addEventListener('click', () => {
-          const a = poly[0];
-          const b = poly[poly.length-1];
-          const mid = { x: (b.x+a.x)/2, y: (b.y+a.y)/2 };
-          poly.push(mid);
-          addMover(svg, g, mid);
-          render(g);
-        });
+      document.querySelector('#add-vertex').addEventListener('click', () => {
+        const a = poly[0];
+        const b = poly[poly.length-1];
+        const mid = { x: (b.x+a.x)/2, y: (b.y+a.y)/2 };
+        poly.push(mid);
+        addMover(svg, g, mid);
+        render(g);
+      });
+      document.querySelector('#export').addEventListener('click', () => {
+        const options = Array.from(document.querySelectorAll('[id^=options-]'))
+          .reduce((acc, input) => ({ ...acc, [input.id.split('-')[1]]: input.value }), {});
+        window.alert(JSON.stringify({ poly, options },undefined,0));
+      });
+      document.querySelector('#import').addEventListener('click', () => {
+        const input = JSON.parse(window.prompt('Previously exported data'));
+        // yep, no validation, this is to be used by professionals after all :)
+        poly = input.poly;
+        Object.entries(input.options).forEach(([k, v]) => document.querySelector(`#options-${k}`).value=v);
+        render(g);
+      });
     });
   </script>
 </head>
@@ -101,7 +113,7 @@
     Mauris eu ex nec elit tincidunt sagittis. Nullam rhoncus venenatis metus, eget condimentum sapien pharetra eu. Pellentesque commodo pellentesque eros vitae commodo. Morbi feugiat ipsum nec efficitur imperdiet. Morbi cursus sit amet odio sed pharetra. Etiam volutpat vel mauris vel tempus. Vivamus vehicula at urna nec elementum.
   </template>
   <div style="display: flex; flex-direction: row; gap: 10px;">
-    <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black;" xmlns="http://www.w3.org/2000/svg">
+    <svg width="500" height="500" viewBox="0 0 500 500" style="border: 1px solid black; flex: none;" xmlns="http://www.w3.org/2000/svg">
     </svg>
     <div style="display: flex; flex-direction: column; gap: 10px;">
       <fieldset><legend>Options</legend>
@@ -114,6 +126,11 @@
       </fieldset>
       <div><button id="add-vertex">Add vertex</button></div>
       <div>Double click on vertex to remove (you can not have less than 3 vertices)</div>
+      <div>
+        <button id="import">Import</button>
+        <button id="export">Export</button>
+      </div>
+      <div>Please use Export if you find some bug, and copy the result in the Issue to make it easier to reproduce.</div>
     </div>
   </div>
 </body>
