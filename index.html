@@ -72,7 +72,7 @@
       const textContent = document.createTextNode(document.querySelector('template').innerHTML);
       textPathElem.append(textContent);
     };
-    
+
     document.addEventListener('DOMContentLoaded', () => {
       const svg = document.querySelector('svg');
       const g = createSvgElement(svg, 'g');
@@ -98,6 +98,8 @@
         // yep, no validation, this is to be used by professionals after all :)
         poly = input.poly;
         Object.entries(input.options).forEach(([k, v]) => document.querySelector(`#options-${k}`).value=v);
+        document.querySelectorAll('circle').forEach(circle => circle.remove());
+        poly.forEach(point => addMover(svg, g, point));
         render(g);
       });
     });
@@ -122,7 +124,7 @@
         <label>marginBottom: <input id="options-marginBottom" type="number" value="0"></label>
         <label>marginLeft: <input id="options-marginLeft" type="number" value="0"></label>
         <label>marginRight: <input id="options-marginRight" type="number" value="0"></label>
-        <label>method: <input id="options-method" type="number" value="1"></label>
+        <label>method: <input id="options-method" type="number" value="2"></label>
       </fieldset>
       <div><button id="add-vertex">Add vertex</button></div>
       <div>Double click on vertex to remove (you can not have less than 3 vertices)</div>
