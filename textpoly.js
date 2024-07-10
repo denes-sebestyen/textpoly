@@ -112,7 +112,7 @@ export class Textpoly {
             if (firstLineIdx >= 0) {
               const thisOne = inlines.splice(firstLineIdx, 1);
               let connectPoint = thisOne[0].A.y===row.top ? thisOne[0].B : thisOne[0].A;
-              while (connectPoint.y !== row.top && connectPoint !== row.bottom) {
+              while (connectPoint.y !== row.top && connectPoint.y !== row.bottom) {
                 const nextLineIdx = inlines.findIndex(il =>
                   il.A.x==connectPoint.x && il.A.y==connectPoint.y || il.B.x==connectPoint.x && il.B.y==connectPoint.y);
                 if (nextLineIdx < 0) { break; }
@@ -138,7 +138,7 @@ export class Textpoly {
             if (firstLineIdx >= 0) {
               const thisOne = inlines.splice(firstLineIdx, 1);
               let connectPoint = thisOne[0].A.y==row.bottom ? thisOne[0].B : thisOne[0].A;
-              while (connectPoint.y !== row.top && connectPoint !== row.bottom) {
+              while (connectPoint.y !== row.top && connectPoint.y !== row.bottom) {
                 const nextLineIdx = inlines.findIndex(il =>
                   il.A.x==connectPoint.x && il.A.y==connectPoint.y || il.B.x==connectPoint.x && il.B.y==connectPoint.y);
                 if (nextLineIdx < 0) { break; }
