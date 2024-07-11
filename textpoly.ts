@@ -190,6 +190,7 @@ export class Textpoly {
           }
         });
         rows.forEach(row => row.segments
+          .filter(segment => segment.left < segment.right)
           .forEach(segment => {
             textBoxes.push({ startX: segment.left, endX: segment.right, y: row.top, y2: row.bottom })
           }));
