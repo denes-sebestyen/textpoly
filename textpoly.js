@@ -299,7 +299,7 @@ export class Textpoly {
 
   createTextPath() {
     const textBoxes = this.createTextBoxes();
-    return textBoxes.map(({ startX, endX, y, y2 }) => `M${startX},${y2} L${endX},${y2}`).join(' ');
+    return textBoxes.map(({ startX, endX, y2 }) => `M${startX},${y2} L${endX},${y2}`).join(' ');
   }
 }
 
